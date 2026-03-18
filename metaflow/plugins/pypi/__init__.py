@@ -4,7 +4,6 @@ from metaflow.exception import MetaflowException
 MAGIC_FILE = "conda.manifest"
 
 
-# TODO: This can be lifted all the way into metaflow config
 def _datastore_packageroot(datastore, echo):
     datastore_type = datastore.TYPE
     datastore_packageroot = getattr(
