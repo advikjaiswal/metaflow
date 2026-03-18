@@ -19,8 +19,10 @@ def _datastore_packageroot(datastore, echo):
         if datastore_sysroot is None:
             # TODO: Throw a more evocative error message
             raise MetaflowException(
-                msg="METAFLOW_DATASTORE_SYSROOT_{datastore_type} must be set!".format(
-                    datastore_type=datastore_type.upper()
+                msg=(
+                    f"Datastore sysroot is not configured for datastore type '{datastore_type}'. "
+                    f"Please set METAFLOW_DATASTORE_SYSROOT_{datastore_type.upper()} "
+                    "in your environment or Metaflow configuration."
                 )
             )
         datastore_packageroot = "{datastore_sysroot}/conda".format(
