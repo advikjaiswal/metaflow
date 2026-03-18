@@ -36,10 +36,10 @@ def process_messages(worker_type, worker):
             else:
                 break
 
-        except:  # todo handle other possible exceptions gracefully
+        except Exception as e: 
             print(
-                "[sidecar:%s]: %s" % (worker_type, traceback.format_exc()),
-                file=sys.stderr,
+                f"[sidecar:{worker_type}] Error occurred: {str(e)}\n{traceback.format_exc()}",
+                file=sys.stderr
             )
             break
     try:
