@@ -83,8 +83,14 @@ class CLIArgs(object):
                     yield to_unicode(ConfigInput.make_key_name(config_name))
                 continue
             k = k.replace("_", "-")
-            v = v if isinstance(v, (list, tuple, set)) else [v]
-            for value in v:
+            if isinstance(v, (list, tuple, set)):
+                if not v:
+                    continue
+                values = v
+            else:
+                values = [v]
+
+            for value in values:
                 yield "--%s" % k
                 if not isinstance(value, bool):
                     yield to_unicode(value)
