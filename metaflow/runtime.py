@@ -2008,7 +2008,7 @@ class TruncatedBuffer(object):
         if system_msg:
             self._buffer.write(bytedata)
         elif not self._eof:
-            if self._size + len(bytedata) < self._maxsize:
+            if self._size + len(bytedata) <= self._maxsize:
                 self._buffer.write(bytedata)
                 self._size += len(bytedata)
             else:
