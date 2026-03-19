@@ -2145,8 +2145,14 @@ class CLIArgs(object):
                 if k == "decospecs":
                     k = "with"
                 k = k.replace("_", "-")
-                v = v if isinstance(v, (list, tuple, set)) else [v]
-                for value in v:
+                if isinstance(v, (list, tuple, set)):
+                    if not v:
+                        continue
+                    values = v
+                else:
+                    values = [v]
+
+                for value in values:
                     yield "--%s" % k
                     if not isinstance(value, bool):
                         value = value if isinstance(value, tuple) else (value,)
