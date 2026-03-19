@@ -1,18 +1,13 @@
-class Inputs(object):
-    """
-    split: inputs.step_a.x inputs.step_b.x
-    foreach: inputs[0].x
-    both: (inp.x for inp in inputs)
-    """
+def __init__(self, flows):
 
-    def __init__(self, flows):
-        # TODO sort by foreach index
-        self.flows = list(flows)
-        for flow in self.flows:
-            setattr(self, flow._current_step, flow)
+    def get_foreach_index(flow):
+        try:
+            return flow._foreach_stack[-1]
+        except (AttributeError, IndexError):
+            return 0
 
-    def __getitem__(self, idx):
-        return self.flows[idx]
+    flows = list(flows)  # ← restore safety
+    self.flows = sorted(flows, key=get_foreach_index)
 
-    def __iter__(self):
-        return iter(self.flows)
+    for flow in self.flows:
+        setattr(self, flow._current_step, flow)
