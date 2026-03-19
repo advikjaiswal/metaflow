@@ -77,7 +77,7 @@ class CLIArgs(object):
                 # need to send them one at a time using --config-value <name> kv.<name>.
                 # Note it can be either config or config_value depending
                 # on click processing order.
-                for config_name in v.keys():
+                for config_name in v:
                     yield "--config-value"
                     yield to_unicode(config_name)
                     yield to_unicode(ConfigInput.make_key_name(config_name))
