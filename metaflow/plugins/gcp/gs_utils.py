@@ -3,6 +3,13 @@ import sys
 from metaflow.exception import MetaflowException, MetaflowInternalError
 from metaflow.plugins.gcp.gs_exceptions import MetaflowGSPackageError
 
+# Safe import of GCP exceptions
+try:
+    from google.cloud.exceptions import NotFound, Forbidden
+except ImportError:
+    NotFound = None
+    Forbidden = None
+
 
 def parse_gs_full_path(gs_uri):
     from urllib.parse import urlparse
@@ -52,14 +59,26 @@ def process_gs_exception(e):
     Google Cloud Storage integration logic should send errors to this function for
     translation.
 
-    We explicitly EXCLUDE executor related errors here.  See handle_executor_exceptions
+    We explicitly EXCLUDE executor related errors here. See handle_executor_exceptions
     """
     if isinstance(e, MetaflowException):
-        # If it's already a MetaflowException... no translation needed
+        # Already a MetaflowException — no translation needed
         raise
+
     if isinstance(e, ImportError):
-        # Surprise ImportError here... (expected to see this handled and wrapped as MetaflowGSPackagingError)
-        # Reraise it raw for visibility, it's a bug and is catastrophic anyway.
+        # Unexpected ImportError — re-raise for visibility
         raise
-    # TODO we may catch and wrap more GCP errors here, as needed.
+
+    # Handle common GCP errors explicitly
+    if NotFound and isinstance(e, NotFound):
+        raise MetaflowInternalError(
+            msg="GCS resource not found: %s" % str(e)
+        )
+
+    if Forbidden and isinstance(e, Forbidden):
+        raise MetaflowInternalError(
+            msg="Access denied to GCS resource: %s" % str(e)
+        )
+
+    # Fallback for all other errors
     raise MetaflowInternalError(msg=str(e))
